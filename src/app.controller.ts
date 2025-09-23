@@ -3,12 +3,14 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AppService } from './app.service';
+import { Public } from './auth/decorators/public.decorator';
 
 @ApiTags('Health')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Public()
   @Get('health')
   @ApiOperation({ summary: 'Health check endpoint' })
   getHealth() {
@@ -21,6 +23,7 @@ export class AppController {
     };
   }
 
+  @Public()
   @Get()
   @ApiOperation({ summary: 'API information' })
   getInfo() {
@@ -32,7 +35,8 @@ export class AppController {
     };
   }
 
-  // Add this method for the test to pass
+  @Public()
+  @Get('hello')
   getHello(): string {
     return this.appService.getHello();
   }

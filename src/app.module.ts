@@ -1,24 +1,27 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/require-await */
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { BullModule } from '@nestjs/bull';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
-    // Configuration - UPDATED
+    // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.local', '.env'], // Try multiple files
+      envFilePath: ['.env.local', '.env'],
       ignoreEnvFile: false,
     }),
 
-    // Database - IMPROVED ERROR HANDLING
+    // Database
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
@@ -51,7 +54,7 @@ import { AppService } from './app.service';
       inject: [ConfigService],
     }),
 
-    // Queue - MAKE REDIS OPTIONAL FOR NOW
+    // Queue
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -62,8 +65,19 @@ import { AppService } from './app.service';
       }),
       inject: [ConfigService],
     }),
+
+    // Feature Modules
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Apply JWT guard globally
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}
