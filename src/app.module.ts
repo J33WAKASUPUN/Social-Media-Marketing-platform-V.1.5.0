@@ -10,6 +10,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -69,11 +70,13 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     // Feature Modules
     AuthModule,
     UsersModule,
+    OrganizationsModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    // Apply JWT guard globally
+    // Apply JWT guard globally but exclude organizations from global guard
+    // We'll handle auth per endpoint in organizations controller
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

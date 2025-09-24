@@ -1,7 +1,4 @@
 /* eslint-disable prettier/prettier */
- 
- 
- 
 // src/auth/strategies/jwt.strategy.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
@@ -47,8 +44,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Account is suspended');
     }
 
+    // Return user with 'sub' property to match controller expectations
     return {
-      id: user._id,
+      sub: user._id.toString(),
       email: user.email,
       name: user.name,
       status: user.status,

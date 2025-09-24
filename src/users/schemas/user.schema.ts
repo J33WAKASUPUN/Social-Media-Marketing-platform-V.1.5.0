@@ -88,6 +88,6 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-// Create indexes
-UserSchema.index({ email: 1 }, { unique: true });
+// Create indexes - ONLY these, no duplicates
+// Note: email is already unique in @Prop, so we don't need to add it again
 UserSchema.index({ 'socialAccounts.provider': 1, 'socialAccounts.providerId': 1 });
